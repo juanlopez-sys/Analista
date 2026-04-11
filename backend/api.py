@@ -522,6 +522,11 @@ async def clear_errors(credentials: HTTPAuthorizationCredentials = Depends(secur
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+from fastapi.responses import FileResponse
+
+@app.get("/")
+async def serve_frontend():
+    return FileResponse("frontend/index.html")
 # ============================================================
 # ARRANQUE
 # ============================================================
