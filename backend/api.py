@@ -4,6 +4,7 @@
 # Local: también sirve el frontend desde /static
 # ============================================================
 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import sys
 import os
 from datetime import datetime
