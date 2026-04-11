@@ -109,6 +109,9 @@ if not _is_production:
 # ============================================================
 # HEALTH
 # ============================================================
+@app.get("/")
+async def root():
+    return {"message": "API funcionando correctamente"}
 
 @app.get("/api/init-db")
 async def init_db():
