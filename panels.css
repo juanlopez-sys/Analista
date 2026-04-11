@@ -1,0 +1,260 @@
+/* ============================================================
+   panels.css — Estilos específicos de cada panel/sección
+   Sistema Analista Crypto
+   ============================================================ */
+
+/* ── POSICIONES ── */
+.pos-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: border-color 0.15s;
+}
+
+.pos-card:hover {
+  border-color: var(--border2);
+}
+
+.pos-card.clickable {
+  cursor: pointer;
+}
+
+.pos-card.clickable:hover {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.pos-symbol {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text);
+  min-width: 60px;
+}
+
+.pos-details { flex: 1; }
+
+.pos-detail-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.pos-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pos-detail-label {
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  font-family: var(--sans);
+  font-weight: 600;
+}
+
+.pos-detail-val {
+  font-size: 12px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.pos-pnl {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 16px;
+  min-width: 80px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.pos-pnl.positive { color: var(--accent); }
+.pos-pnl.negative { color: var(--red); }
+
+/* ── NOTICIAS ── */
+.news-item {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.news-item:last-child {
+  border-bottom: none;
+}
+
+.news-title {
+  font-size: 12px;
+  color: var(--text);
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+
+.news-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 10px;
+  color: var(--text3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.news-summary {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* ── CHAT ── */
+.chat-container {
+  height: 340px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 12px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border2) transparent;
+  background: var(--bg3);
+}
+
+.chat-msg {
+  margin-bottom: 10px;
+  max-width: 85%;
+}
+
+.chat-msg.user {
+  margin-left: auto;
+}
+
+.chat-bubble {
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.chat-msg.user .chat-bubble {
+  background: var(--accent-dim);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+  color: var(--text);
+}
+
+.chat-msg.assistant .chat-bubble {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  white-space: pre-wrap;
+}
+
+.chat-meta {
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 3px;
+  text-align: right;
+}
+
+.chat-msg.assistant .chat-meta {
+  text-align: left;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── LECCIONES ── */
+.lesson-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.lesson-item:last-child {
+  border-bottom: none;
+}
+
+.lesson-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.lesson-symbol {
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.lesson-text {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.lesson-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 10px;
+  color: var(--text3);
+  align-items: center;
+}
+
+/* ── ERRORES LOG ── */
+.error-line {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+  color: var(--red);
+  font-family: var(--mono);
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.error-line:last-child {
+  border-bottom: none;
+}
+
+/* ── MODO AUTO STATUS ── */
+.auto-status {
+  color: var(--text3);
+  font-size: 12px;
+  padding-top: 20px;
+  line-height: 1.6;
+}
+
+.auto-status.running {
+  color: var(--accent);
+}
+
+/* ── SYSTEM INFO ── */
+.sysinfo-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.sysinfo-row:last-child {
+  border-bottom: none;
+}
+
+.sysinfo-key {
+  color: var(--text3);
+  font-size: 11px;
+}
+
+.sysinfo-val {
+  color: var(--text);
+  font-weight: 700;
+}

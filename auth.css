@@ -1,0 +1,100 @@
+/* ============================================================
+   auth.css — Estilos de la pantalla de login
+   ============================================================ */
+
+/* ── PANTALLA DE LOGIN ── */
+#loginScreen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+}
+
+.login-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: var(--shadow);
+}
+
+.login-logo {
+  font-family: var(--sans);
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.login-logo .logo-dot {
+  font-size: 12px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.login-subtitle {
+  color: var(--text3);
+  font-size: 11px;
+  margin-bottom: 32px;
+}
+
+.login-card .form-group {
+  margin-bottom: 16px;
+}
+
+.login-error {
+  background: var(--red-dim);
+  border: 1px solid rgba(255, 77, 109, 0.3);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--red);
+  margin-bottom: 16px;
+  display: none;
+}
+
+.login-spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(9, 12, 16, 0.3);
+  border-top-color: var(--bg);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+
+.login-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 10px;
+  color: var(--text3);
+  line-height: 1.6;
+}
+
+/* ── BOTÓN LOGOUT en topbar ── */
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  color: var(--text3);
+  font-size: 11px;
+  font-family: var(--mono);
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-left: auto;
+}
+
+.btn-logout:hover {
+  border-color: var(--red);
+  color: var(--red);
+}

@@ -1,0 +1,158 @@
+/* ============================================================
+   base.css — Variables CSS, reset y tipografía
+   Sistema Analista Crypto
+   ============================================================ */
+
+/* ── VARIABLES ── */
+:root {
+  /* Colores base */
+  --bg:         #090c10;
+  --bg2:        #0e1318;
+  --bg3:        #151b23;
+  --border:     #1e2832;
+  --border2:    #2a3644;
+
+  /* Texto */
+  --text:       #c8d6e8;
+  --text2:      #7a93ad;
+  --text3:      #3d5166;
+
+  /* Acento principal */
+  --accent:     #00d4aa;
+  --accent2:    #00a882;
+  --accent-dim: rgba(0, 212, 170, 0.08);
+
+  /* Estados */
+  --red:        #ff4d6d;
+  --red-dim:    rgba(255, 77, 109, 0.10);
+  --yellow:     #ffd166;
+  --yellow-dim: rgba(255, 209, 102, 0.10);
+  --blue:       #4da6ff;
+  --blue-dim:   rgba(77, 166, 255, 0.10);
+
+  /* Geometría */
+  --radius:     6px;
+  --radius2:    12px;
+  --shadow:     0 4px 24px rgba(0, 0, 0, 0.4);
+
+  /* Tipografía */
+  --mono:       'Space Mono', monospace;
+  --sans:       'Syne', sans-serif;
+}
+
+/* ── RESET ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── TIPOGRAFÍA ── */
+h1, h2, h3, h4 {
+  font-family: var(--sans);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--text);
+}
+
+p {
+  color: var(--text2);
+  font-size: 12px;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent2);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 2px;
+}
+
+/* ── UTILIDADES ── */
+.text-accent  { color: var(--accent); }
+.text-red     { color: var(--red); }
+.text-yellow  { color: var(--yellow); }
+.text-blue    { color: var(--blue); }
+.text-muted   { color: var(--text3); }
+.text-sm      { font-size: 11px; }
+.text-xs      { font-size: 10px; }
+.text-mono    { font-family: var(--mono); }
+.text-sans    { font-family: var(--sans); }
+.text-bold    { font-weight: 700; }
+.text-right   { text-align: right; }
+.text-center  { text-align: center; }
+
+.mt-4  { margin-top: 4px; }
+.mt-8  { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.mt-16 { margin-top: 16px; }
+.mb-4  { margin-bottom: 4px; }
+.mb-8  { margin-bottom: 8px; }
+.mb-12 { margin-bottom: 12px; }
+.mb-16 { margin-bottom: 16px; }
+
+.flex         { display: flex; }
+.flex-center  { display: flex; align-items: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-4        { gap: 4px; }
+.gap-8        { gap: 8px; }
+.gap-12       { gap: 12px; }
+.gap-16       { gap: 16px; }
+.flex-wrap    { flex-wrap: wrap; }
+.flex-1       { flex: 1; }
+
+.hidden { display: none !important; }
+.w-full { width: 100%; }
+
+/* ── ANIMACIONES BASE ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);   opacity: 1; }
+}
