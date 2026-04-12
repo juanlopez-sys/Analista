@@ -23,113 +23,35 @@ from config import (
 )
 from database import get_connection, get_last_timestamp, USE_POSTGRES
 
-BYBIT_BASE_URL = "https://api.bybit.com/v5/market"
+BINANCE_BASE_URL = "https://api3.binance.com/api/v3"
 
 
 # ============================================================
 # DESCARGA DE VELAS DESDE BINANCE
 # ============================================================
 
-def _binance_to_bybit_interval(interval: str) -> str:
-    """Convierte intervalos de Binance a Bybit."""
-    mapping = {
-        "1m": "1", "3m": "3", "5m": "5", "15m": "15", "30m": "30",
-        "1h": "60", "2h": "120", "4h": "240", "6h": "360", "8h": "480",
-        "12h": "720", "1d": "D", "1w": "W", "1M": "M"
-    }
-    return mapping.get(interval, interval)
-
-
 def fetch_candles(symbol: str, interval: str, limit: int = 1000, start_time: int = None) -> list:
-    """
-    Descarga velas desde Bybit y las convierte al formato Binance
-    para que el resto del código no necesite cambios.
-    Bybit limita a 200 velas por request — hacemos múltiples requests si es necesario.
-    """
-    bybit_interval = _binance_to_bybit_interval(interval)
-    url = f"{BYBIT_BASE_URL}/kline"
-    all_candles = []
-    # Bybit máximo 200 velas por request
-    bybit_limit = min(limit, 200)
+    url    = f"{BINANCE_BASE_URL}/klines"
+    params = {"symbol": symbol, "interval": interval, "limit": limit}
+    if start_time:
+        params["startTime"] = start_time + 1
 
     try:
-        params = {
-            "category": "spot",
-            "symbol":   symbol,
-            "interval": bybit_interval,
-            "limit":    bybit_limit,
-        }
-        if start_time:
-            params["start"] = start_time + 1
-
-        # Si necesitamos más de 200 velas, hacemos múltiples requests
-        remaining = limit
-        end_time  = None
-
-        while remaining > 0:
-            params["limit"] = min(remaining, 200)
-            if end_time:
-                params["end"] = end_time
-
-            response = requests.get(url, params=params, timeout=10)
-            response.raise_for_status()
-            data = response.json()
-
-            if data.get("retCode") != 0:
-                logger.warning(f"Bybit error: {data.get('retMsg')} — {symbol} {interval}")
-                break
-
-            candles = data.get("result", {}).get("list", [])
-            if not candles:
-                break
-
-            # Bybit devuelve [timestamp_ms, open, high, low, close, volume, turnover]
-            # en orden DESCENDENTE (más reciente primero) — invertimos
-            candles = list(reversed(candles))
-
-            # Convertir al formato Binance:
-            # [timestamp, open, high, low, close, volume, close_time, quote_vol, trades, tbbase, tbquote, ignore]
-            for c in candles:
-                ts     = int(c[0])
-                binance_format = [
-                    ts,          # timestamp ms
-                    c[1],        # open
-                    c[2],        # high
-                    c[3],        # low
-                    c[4],        # close
-                    c[5],        # volume
-                    ts + 1,      # close_time (aproximado)
-                    c[6],        # quote_volume (turnover)
-                    0,           # trades (no disponible)
-                    "0", "0", "0"  # campos extra de Binance
-                ]
-                all_candles.append(binance_format)
-
-            remaining -= len(candles)
-
-            # Si recibimos menos de lo pedido, no hay más datos
-            if len(candles) < params["limit"]:
-                break
-
-            # Para el siguiente request, terminamos antes del primer timestamp
-            end_time  = int(candles[0][0]) - 1
-            if end_time <= 0:
-                break
-
-        return all_candles
-
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        return response.json()
     except requests.exceptions.ConnectionError as e:
         err = BinanceError("Sin conexión — verifica tu red",
                            context={"crypto": symbol, "timeframe": interval, "error": str(e)})
         err.log(logger); err.show()
         return []
     except requests.exceptions.Timeout as e:
-        err = BinanceTimeoutError("Timeout con Bybit",
+        err = BinanceTimeoutError("Timeout con Binance",
                                   context={"crypto": symbol, "timeframe": interval, "error": str(e)})
         err.log(logger); err.show()
         return []
     except Exception as e:
-        err = BinanceError("Error descargando datos de Bybit",
+        err = BinanceError("Error descargando datos de Binance",
                            context={"crypto": symbol, "timeframe": interval, "error": str(e)})
         err.log(logger); err.show()
         return []
@@ -610,14 +532,9 @@ def collect_all(verbose: bool = True) -> dict:
 
 def get_current_price(crypto: str) -> float:
     try:
-        url      = f"{BYBIT_BASE_URL}/tickers"
-        response = requests.get(url, params={"category": "spot", "symbol": crypto}, timeout=5)
-        data     = response.json()
-        if data.get("retCode") == 0:
-            tickers = data.get("result", {}).get("list", [])
-            if tickers:
-                return float(tickers[0]["lastPrice"])
-        return 0.0
+        url      = f"{BINANCE_BASE_URL}/ticker/price"
+        response = requests.get(url, params={"symbol": crypto}, timeout=5)
+        return float(response.json()['price'])
     except Exception as e:
         logger.warning(f"Error obteniendo precio de {crypto}: {e}")
         return 0.0
