@@ -117,19 +117,32 @@
     <!-- DATOS -->
     <section class="panel active" id="panel-datos">
       <div class="panel-title">Actualizar datos</div>
-      <div class="panel-subtitle">Descarga velas nuevas de Binance y noticias</div>
+      <div class="panel-subtitle">Importa tu base de datos local o descarga datos nuevos</div>
       <div class="grid-2">
         <div class="card">
-          <div class="card-title">Velas de mercado</div>
-          <p class="mb-16">Descarga las últimas velas de Binance para las cryptos activas y recalcula los indicadores técnicos.</p>
-          <button class="btn btn-primary btn-full" data-action="update-candles">⟳ Actualizar velas</button>
-          <div class="output-box" id="out-update-candles"></div>
+          <div class="card-title">⬆ Importar base de datos</div>
+          <p class="mb-16">Sube tu archivo <strong>trading_system.db</strong> local. Solo se importarán las velas nuevas que no estén en Supabase.</p>
+          <label class="btn btn-primary btn-full" style="cursor:pointer; text-align:center; display:block;">
+            ⬆ Seleccionar archivo .db
+            <input type="file" id="importDbFile" accept=".db" style="display:none;">
+          </label>
+          <div id="importDbFileName" class="text-xs text-muted mt-4" style="min-height:16px;"></div>
+          <button class="btn btn-secondary btn-full mt-8" id="btnImportDb" disabled>↑ Importar a Supabase</button>
+          <div class="output-box" id="out-import-db"></div>
         </div>
         <div class="card">
           <div class="card-title">Noticias</div>
           <p class="mb-16">Recolecta noticias desde CryptoCompare y busca noticias macro con Claude.</p>
           <button class="btn btn-primary btn-full" data-action="update-news">◎ Actualizar noticias</button>
           <div class="output-box" id="out-update-news"></div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Velas de mercado</div>
+          <p class="mb-16">Descarga las últimas velas desde la API de mercado para las cryptos activas.</p>
+          <button class="btn btn-secondary btn-full" data-action="update-candles">⟳ Actualizar velas desde API</button>
+          <div class="output-box" id="out-update-candles"></div>
         </div>
       </div>
       <div class="card">
