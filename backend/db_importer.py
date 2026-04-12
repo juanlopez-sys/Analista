@@ -201,3 +201,4 @@ def import_sqlite_db(db_path: str, only_tables: list = None) -> dict:
         "errores":      errores,
         "detalle":      [d for d in detalle if d["nuevas"] > 0]
     }
+    
