@@ -7,13 +7,14 @@
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import sys
 import os
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, List
 
 try:
-    from fastapi import FastAPI, HTTPException
-    from fastapi.responses import JSONResponse
+    from fastapi import FastAPI, HTTPException, UploadFile, File
+    from fastapi.responses import JSONResponse, FileResponse
     from fastapi.middleware.cors import CORSMiddleware
     from fastapi.staticfiles import StaticFiles
     import uvicorn
@@ -33,10 +34,8 @@ logger = setup_logger(__name__)
 # ORÍGENES PERMITIDOS (CORS)
 # ============================================================
 
-# En producción, FRONTEND_URL viene de la variable de entorno
-# configurada en Render (ej: https://crypto-app.onrender.com)
 _frontend_url  = os.getenv("FRONTEND_URL", "")
-_is_production = bool(os.getenv("RENDER"))   # Render setea esta var automáticamente
+_is_production = bool(os.getenv("RENDER"))
 
 ALLOWED_ORIGINS = [
     "http://localhost:8000",
@@ -99,7 +98,6 @@ app.add_middleware(
 )
 
 # ── En local, servir el frontend directamente ─────────────
-# En Render esto no se usa (frontend es un Static Site separado)
 if not _is_production:
     _frontend_dir = Path(__file__).parent.parent / "frontend"
     if _frontend_dir.exists():
@@ -109,6 +107,7 @@ if not _is_production:
 # ============================================================
 # HEALTH
 # ============================================================
+
 @app.get("/")
 async def root():
     return {"message": "API funcionando correctamente"}
@@ -119,7 +118,6 @@ async def init_db():
     try:
         import os, psycopg2
         db_url = os.getenv("DATABASE_URL", "NO CONFIGURADA")
-        # Probar conexión directa primero
         try:
             conn = psycopg2.connect(db_url)
             conn.close()
@@ -138,7 +136,6 @@ async def init_db():
     except Exception as e:
         import traceback
         return {"ok": False, "step": "create_tables", "error": str(e), "traceback": traceback.format_exc()}
-
 
 @app.get("/api/health")
 async def health():
@@ -226,6 +223,47 @@ async def update_data(credentials: HTTPAuthorizationCredentials = Depends(securi
     except Exception as e:
         logger.error(f"Error en update-data: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================
+# IMPORTAR BASE DE DATOS LOCAL (.db)
+# ============================================================
+
+@app.post("/api/import-db")
+async def import_db(
+    file: UploadFile = File(...),
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """
+    Recibe un archivo .db de SQLite y lo importa a Supabase.
+    Solo inserta velas con timestamp mayor al máximo existente (sin duplicados).
+    """
+    get_current_user(credentials)
+
+    if not file.filename.endswith(".db"):
+        raise HTTPException(status_code=400, detail="Solo se aceptan archivos .db de SQLite")
+
+    tmp_path = None
+    try:
+        content = await file.read()
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as tmp:
+            tmp.write(content)
+            tmp_path = tmp.name
+
+        logger.info(f"Archivo recibido: {file.filename} ({len(content)/1024/1024:.1f} MB)")
+
+        from db_importer import import_sqlite_db
+        resultado = import_sqlite_db(tmp_path)
+        return resultado
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error importando .db: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 # ============================================================
 # PRECIOS
@@ -537,11 +575,6 @@ async def clear_errors(credentials: HTTPAuthorizationCredentials = Depends(secur
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-from fastapi.responses import FileResponse
-
-@app.get("/")
-async def serve_frontend():
-    return FileResponse("frontend/index.html")
 # ============================================================
 # ARRANQUE
 # ============================================================
@@ -550,3 +583,4 @@ if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     print(f"🚀 Iniciando en http://localhost:{port}")
     uvicorn.run("api:app", host="0.0.0.0", port=port, reload=not _is_production, log_level="warning")
+    
