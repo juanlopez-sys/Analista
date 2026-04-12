@@ -117,12 +117,27 @@ async def root():
 async def init_db():
     """Crea todas las tablas. Ejecutar una sola vez tras el primer deploy."""
     try:
+        import os, psycopg2
+        db_url = os.getenv("DATABASE_URL", "NO CONFIGURADA")
+        # Probar conexión directa primero
+        try:
+            conn = psycopg2.connect(db_url)
+            conn.close()
+            conn_ok = True
+            conn_error = None
+        except Exception as ce:
+            conn_ok = False
+            conn_error = str(ce)
+
+        if not conn_ok:
+            return {"ok": False, "step": "conexion", "error": conn_error, "db_url_prefix": db_url[:40]}
+
         from database import create_tables
         create_tables()
         return {"ok": True, "message": "Base de datos inicializada correctamente"}
     except Exception as e:
-        logger.error(f"Error inicializando BD: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        return {"ok": False, "step": "create_tables", "error": str(e), "traceback": traceback.format_exc()}
 
 
 @app.get("/api/health")
