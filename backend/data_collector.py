@@ -23,7 +23,7 @@ from config import (
 )
 from database import get_connection, get_last_timestamp, USE_POSTGRES
 
-BINANCE_BASE_URL = "https://api3.binance.com/api/v3"
+BINANCE_BASE_URL = "https://api.binance.com/api/v3"
 
 
 # ============================================================
