@@ -489,3 +489,89 @@ async function runAction(action, btnEl) {
     if (btnEl) btnEl.disabled = false;
   }
 }
+
+/* ============================================================
+   IMPORTAR BASE DE DATOS (.db)
+   ============================================================ */
+
+function initImportDb() {
+  const fileInput  = document.getElementById('importDbFile');
+  const fileLabel  = document.getElementById('importDbFileName');
+  const btnImport  = document.getElementById('btnImportDb');
+  const outBox     = document.getElementById('out-import-db');
+
+  if (!fileInput) return;
+
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      fileLabel.textContent = `✓ ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;
+      btnImport.disabled = false;
+    } else {
+      fileLabel.textContent = '';
+      btnImport.disabled = true;
+    }
+  });
+
+  btnImport.addEventListener('click', async () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    btnImport.disabled = true;
+    showOutput('out-import-db', [{ type: 'loading', text: `Subiendo ${file.name}...` }]);
+
+    try {
+      const token    = typeof getToken === 'function' ? getToken() : null;
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const API_URL  = typeof API_BASE !== 'undefined' ? API_BASE : '';
+      const response = await fetch(`${API_URL}/import-db`, {
+        method:  'POST',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+        body:    formData,
+      });
+
+      if (response.status === 401) {
+        if (typeof showLoginScreen === 'function') showLoginScreen();
+        throw new Error('Sesión expirada — vuelve a iniciar sesión');
+      }
+
+      const res = await response.json();
+
+      if (!response.ok) {
+        throw new Error(res.detail || `Error ${response.status}`);
+      }
+
+      const msgs = [
+        { type: 'ok', text: `✅ Importación completada` },
+        { type: 'ok', text: `📊 Velas nuevas importadas: ${res.total_nuevas?.toLocaleString() || 0}` },
+        { type: 'ok', text: `📁 Tablas con datos nuevos: ${res.tablas_con_datos_nuevos || 0} de ${res.total_tablas_procesadas || 0}` },
+      ];
+
+      if (res.errores && res.errores.length > 0) {
+        msgs.push({ type: 'warn', text: `⚠️ ${res.errores.length} errores menores` });
+      }
+
+      if (res.detalle && res.detalle.length > 0) {
+        const top = res.detalle.slice(0, 5);
+        top.forEach(d => msgs.push({ type: 'ok', text: `  ${d.table}: ${d.nuevas} nuevas` }));
+        if (res.detalle.length > 5) {
+          msgs.push({ type: 'ok', text: `  ... y ${res.detalle.length - 5} tablas más` });
+        }
+      }
+
+      showOutput('out-import-db', msgs);
+      toast(`Importadas ${res.total_nuevas?.toLocaleString() || 0} velas nuevas`, 'success', 5000);
+
+    } catch (e) {
+      showOutput('out-import-db', [{ type: 'err', text: String(e.message) }]);
+      toast(String(e.message).slice(0, 120), 'error', 5000);
+    } finally {
+      btnImport.disabled = false;
+    }
+  });
+}
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', initImportDb);
