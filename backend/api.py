@@ -54,7 +54,7 @@ if _frontend_url:
 # ============================================================
 
 # Tamaño máximo de archivo para import-db (50 MB)
-MAX_UPLOAD_SIZE_BYTES = 50 * 1024 * 1024
+MAX_UPLOAD_SIZE_BYTES = 110 * 1024 * 1024
 
 # Rate limiting simple en memoria: ventana de 60 s
 _rate_limit_store: dict = defaultdict(list)
